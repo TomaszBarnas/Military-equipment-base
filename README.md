@@ -1,0 +1,1 @@
+# Django-military-equipment-base

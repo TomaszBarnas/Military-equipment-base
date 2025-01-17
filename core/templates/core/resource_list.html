@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">My Resources</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'resource_list' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'resource_create' %}">Add Resource</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Another Page</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="text-center">Resource List</h1>
+
+        <!-- Filter Form -->
+        <form method="get" class="mb-3">
+            <label for="status" class="form-label">Filter by status:</label>
+            <select name="status" id="status" class="form-select">
+                <option value="">All</option>
+                <option value="available" {% if status_filter == 'available' %}selected{% endif %}>Available</option>
+                <option value="in_use" {% if status_filter == 'in_use' %}selected{% endif %}>In Use</option>
+                <option value="under_maintenance" {% if status_filter == 'under_maintenance' %}selected{% endif %}>Under Maintenance</option>
+            </select>
+            <button type="submit" class="btn btn-primary mt-2">Filter</button>
+        </form>
+
+        <!-- Add New Resource Button -->
+        <div class="mb-3">
+            <a href="{% url 'resource_create' %}" class="btn btn-success">Add New Resource</a>
+        </div>
+
+        <!-- Resource Table -->
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resource in page_obj %}
+                <tr>
+                    <td>{{ resource.name }}</td>
+                    <td>{{ resource.get_resource_type_display }}</td>
+                    <td>{{ resource.quantity }}</td>
+                    <td>{{ resource.location }}</td>
+                    <td>{{ resource.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'resource_update' resource.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'resource_delete' resource.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No resources found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
